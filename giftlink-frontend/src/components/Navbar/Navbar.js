@@ -1,6 +1,35 @@
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom'
+import {urlConfig} from '../../config';
+import { useAppContext } from '../../context/AuthContext';
 
 export default function Navbar() {
+    const { isLoggedIn, setIsLoggedIn, userName, setUserName } = useAppContext();
+  const navigate=useNavigate();
+    useEffect(() => {
+        const authTokenFromSession = sessionStorage.getItem('auth-token');
+        const nameFromSession = sessionStorage.getItem('name');
+        if (authTokenFromSession) {
+            if(isLoggedIn && nameFromSession) {
+              setUserName(nameFromSession);
+            } else {
+              sessionStorage.removeItem('auth-token');
+              sessionStorage.removeItem('name');
+              sessionStorage.removeItem('email');
+              setIsLoggedIn(false);
+            }
+        }
+    },[isLoggedIn, setIsLoggedIn, setUserName])
+    const handleLogout=()=>{
+        sessionStorage.removeItem('auth-token');
+        sessionStorage.removeItem('name');
+        sessionStorage.removeItem('email');
+        setIsLoggedIn(false);
+        navigate(`/app`);
+    }
+    const profileSecton=()=>{
+      navigate(`/app/profile`);
+    }
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <a className="navbar-brand" href="/">GiftLink</a>
